@@ -15,8 +15,16 @@
             <span class="value">{{ "%.1f"|format(progress) }}%</span>
         </div>
         <div class="stat">
-            <span class="label">Certainty (Kendall Tau)</span>
-            <span class="value">{{ "%.3f"|format(tau) }}</span>
+            <span class="label">Certainty <span class="info-icon" title="Measures ranking stability. More bars indicate a more reliable ranking.">ⓘ</span></span>
+            <div class="certainty-container" title="Kendall Tau: {{ '%.3f'|format(tau) }}">
+                <svg width="55" height="20" viewBox="0 0 55 20" class="certainty-svg">
+                    <rect x="0" y="16" width="8" height="4" rx="1" class="bar {% if tau >= 0.0 %}filled{% endif %}" />
+                    <rect x="11" y="12" width="8" height="8" rx="1" class="bar {% if tau >= 0.2 %}filled{% endif %}" />
+                    <rect x="22" y="8" width="8" height="12" rx="1" class="bar {% if tau >= 0.4 %}filled{% endif %}" />
+                    <rect x="33" y="4" width="8" height="16" rx="1" class="bar {% if tau >= 0.6 %}filled{% endif %}" />
+                    <rect x="44" y="0" width="8" height="20" rx="1" class="bar {% if tau >= 0.8 %}filled{% endif %}" />
+                </svg>
+            </div>
         </div>
         <div class="stat">
             <span class="label">Inconsistency</span>

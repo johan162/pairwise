@@ -365,6 +365,31 @@ input[type="text"], textarea, input[type="file"] {
     border: 1px solid rgba(100, 255, 218, 0.4);
 }
 
+/* Certainty Meter */
+.info-icon {
+    cursor: help;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    border-bottom: 1px dotted var(--text-secondary);
+}
+
+.certainty-container {
+    display: flex;
+    align-items: center;
+    height: 1.5rem; /* Match text height */
+}
+
+.certainty-svg .bar {
+    fill: var(--text-secondary);
+    opacity: 0.2;
+    transition: fill 0.3s, opacity 0.3s;
+}
+
+.certainty-svg .bar.filled {
+    fill: #D8C3A5; /* Sophisticated Muted Gold */
+    opacity: 1;
+}
+
 /* Footer */
 footer {
     text-align: center;
