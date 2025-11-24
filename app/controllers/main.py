@@ -4,6 +4,7 @@ from app.models.project import Project
 import os
 import csv
 import io
+import uuid
 from datetime import date
 from flask import Response
 
@@ -33,7 +34,6 @@ def index():
             # Load legacy project
             legacy_project = Project.load_state(STATE_FILE)
             # Create new filename
-            import uuid
             new_filename = f"{secure_filename(legacy_project.name)}_{uuid.uuid4().hex[:8]}.json"
             new_filepath = os.path.join(PROJECTS_DIR, new_filename)
             
@@ -131,8 +131,12 @@ def new_project():
     filepath = os.path.join(DATA_DIR, filename)
     file.save(filepath)
 
+    # Generate a unique filename for the project state
+    state_filename = f"{secure_filename(name)}_{uuid.uuid4().hex[:8]}.json"
+    state_filepath = os.path.join(PROJECTS_DIR, state_filename)
+
     try:
-        current_project = Project(name, description or "", filepath, created_at=created_at)
+        current_project = Project(name, description or "", filepath, state_file=state_filepath, created_at=created_at)
         current_project.save_state()  # Save immediately to create the project file
         return redirect(url_for('main.compare'))
     except Exception as e:
@@ -166,6 +170,20 @@ def compare():
     tau = engine.get_kendall_tau()
     inconsistency = engine.get_inconsistency_level()
     
+    # Calculate estimates for remaining comparisons
+    num_comparisons = len(engine.comparisons)
+    estimates = {}
+    if num_comparisons > 2 and progress > 0.1:
+        # Simple linear extrapolation based on current rate
+        # This is a rough heuristic as progress usually slows down
+        rate = progress / num_comparisons
+        for target in [70, 80, 90]:
+            if progress < target:
+                remaining = int((target - progress) / rate)
+                estimates[target] = max(1, remaining)
+            else:
+                estimates[target] = 0
+    
     return render_template(
         'compare.html',
         task1=task1,
@@ -173,6 +191,7 @@ def compare():
         progress=progress,
         tau=tau,
         inconsistency=inconsistency,
+        estimates=estimates,
         dimension=project.current_dimension,
         dimension_label=DIMENSION_LABELS.get(project.current_dimension, project.current_dimension.title()),
     )
