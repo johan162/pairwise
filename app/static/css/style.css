@@ -219,6 +219,30 @@ input[type="text"], textarea, input[type="file"] {
     background-color: var(--bg-secondary);
     color: var(--accent);
     font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.results-table th:hover {
+    background-color: var(--card-hover);
+}
+
+.results-table th::after {
+    content: '↕';
+    position: absolute;
+    right: 8px;
+    opacity: 0.3;
+}
+
+.results-table th.asc::after {
+    content: '↑';
+    opacity: 1;
+}
+
+.results-table th.desc::after {
+    content: '↓';
+    opacity: 1;
 }
 
 .results-table tr:hover {

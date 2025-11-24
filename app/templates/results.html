@@ -34,15 +34,15 @@
     </div>
 
     <div class="table-container">
-        <table class="results-table">
+        <table class="results-table" id="resultsTable">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Description</th>
-                    <th>Complexity Rank</th>
-                    <th>Value Rank</th>
-                    <th>Complexity Score</th>
-                    <th>Value Score</th>
+                    <th onclick="sortTable(0)">ID</th>
+                    <th onclick="sortTable(1)">Description</th>
+                    <th onclick="sortTable(2)">Complexity Rank</th>
+                    <th onclick="sortTable(3)">Value Rank</th>
+                    <th onclick="sortTable(4)">Complexity Score</th>
+                    <th onclick="sortTable(5)">Value Score</th>
                 </tr>
             </thead>
             <tbody>
@@ -122,5 +122,73 @@
             }
         }
     });
+
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("resultsTable");
+        switching = true;
+        dir = "asc";
+        
+        // Reset all headers classes
+        var headers = table.getElementsByTagName("TH");
+        for (var h = 0; h < headers.length; h++) {
+            if (h !== n) {
+                headers[h].classList.remove("asc", "desc");
+            }
+        }
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            // Loop through all table rows (except the first, which contains table headers):
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                
+                var xContent = x.innerText.toLowerCase();
+                var yContent = y.innerText.toLowerCase();
+                var xNum = parseFloat(xContent);
+                var yNum = parseFloat(yContent);
+                
+                // Check if both are valid numbers (and not empty strings which parseFloat might handle weirdly or return NaN)
+                var isNum = !isNaN(xNum) && !isNaN(yNum) && xContent.trim() !== "" && yContent.trim() !== "";
+
+                if (dir == "asc") {
+                    if (isNum) {
+                        if (xNum > yNum) { shouldSwitch = true; break; }
+                    } else {
+                        if (xContent > yContent) { shouldSwitch = true; break; }
+                    }
+                } else if (dir == "desc") {
+                    if (isNum) {
+                        if (xNum < yNum) { shouldSwitch = true; break; }
+                    } else {
+                        if (xContent < yContent) { shouldSwitch = true; break; }
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount ++;
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+        
+        // Toggle class on the clicked header
+        var header = headers[n];
+        if (dir === "asc") {
+            header.classList.remove("desc");
+            header.classList.add("asc");
+        } else {
+            header.classList.remove("asc");
+            header.classList.add("desc");
+        }
+    }
 </script>
 {% endblock %}
