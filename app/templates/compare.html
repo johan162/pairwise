@@ -5,14 +5,7 @@
     <div class="header-stats">
         <div class="stat">
             <span class="label">Dimension</span>
-            <span class="value">{{ dimension|title }}</span>
-            <div class="dimension-switch">
-                {% if dimension == 'complexity' %}
-                <a href="{{ url_for('main.switch_dimension', dimension='value') }}">Switch to Value</a>
-                {% else %}
-                <a href="{{ url_for('main.switch_dimension', dimension='complexity') }}">Switch to Complexity</a>
-                {% endif %}
-            </div>
+            <span class="value">{{ dimension_label }}</span>
         </div>
         <div class="stat">
             <span class="label">Progress</span>
@@ -22,8 +15,16 @@
             <span class="value">{{ "%.1f"|format(progress) }}%</span>
         </div>
         <div class="stat">
-            <span class="label">Certainty (Kendall Tau)</span>
-            <span class="value">{{ "%.3f"|format(tau) }}</span>
+            <span class="label">Certainty <span class="info-icon" title="Measures ranking stability. More bars indicate a more reliable ranking.">ⓘ</span></span>
+            <div class="certainty-container" title="Kendall Tau: {{ '%.3f'|format(tau) }}">
+                <svg width="55" height="20" viewBox="0 0 55 20" class="certainty-svg">
+                    <rect x="0" y="16" width="8" height="4" rx="1" class="bar {% if tau >= 0.0 %}filled{% endif %}" />
+                    <rect x="11" y="12" width="8" height="8" rx="1" class="bar {% if tau >= 0.2 %}filled{% endif %}" />
+                    <rect x="22" y="8" width="8" height="12" rx="1" class="bar {% if tau >= 0.4 %}filled{% endif %}" />
+                    <rect x="33" y="4" width="8" height="16" rx="1" class="bar {% if tau >= 0.6 %}filled{% endif %}" />
+                    <rect x="44" y="0" width="8" height="20" rx="1" class="bar {% if tau >= 0.8 %}filled{% endif %}" />
+                </svg>
+            </div>
         </div>
         <div class="stat">
             <span class="label">Inconsistency</span>
@@ -31,7 +32,28 @@
         </div>
     </div>
 
-    <h2>Which task has higher {{ dimension }}?</h2>
+    {% if estimates %}
+    <div class="estimates-container" style="text-align: center; margin-top: -1.5rem; margin-bottom: 2rem; font-size: 0.9rem; color: var(--text-secondary);">
+        <span style="margin-right: 5px;">Est. comparisons remaining:</span>
+        {% for target, count in estimates.items() %}
+            {% if count > 0 %}
+            <span style="margin: 0 8px; padding: 2px 6px; background: var(--bg-secondary); border-radius: 4px; border: 1px solid var(--text-secondary);">
+                {{ target }}%: <strong style="color: var(--accent);">~{{ count }}</strong>
+            </span>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div style="text-align: right; margin-bottom: 1rem;">
+        {% if dimension == 'complexity' %}
+        <a href="{{ url_for('main.switch_dimension', dimension='value') }}" class="btn btn-switch">Switch to Value</a>
+        {% else %}
+        <a href="{{ url_for('main.switch_dimension', dimension='complexity') }}" class="btn btn-switch">Switch to Complexity</a>
+        {% endif %}
+    </div>
+
+    <h2>Which task has higher {{ dimension_label }}?</h2>
 
     <div class="cards-wrapper">
         <form action="{{ url_for('main.vote') }}" method="POST" class="card-form">
@@ -55,8 +77,9 @@
         </form>
     </div>
     
-    <div class="skip-actions">
-        <!-- Ideally we'd have a skip button, but for now just the vote buttons -->
+    <div class="skip-actions" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem;">
+        <a href="{{ url_for('main.results') }}" class="btn btn-pause">Pause & View Results</a>
+        <a href="{{ url_for('main.index') }}" class="btn btn-exit">Save & Exit</a>
     </div>
 </div>
 

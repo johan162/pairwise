@@ -41,7 +41,7 @@ body {
 .brand {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--accent);
+    color: #D8C3A5; /* Sophisticated Muted Gold */
     text-decoration: none;
 }
 
@@ -89,8 +89,143 @@ body {
     color: var(--accent);
 }
 
+.btn-secondary:hover {
+    background-color: rgba(100, 255, 218, 0.1);
+}
+
 .btn-danger {
+    background-color: transparent;
+    border: 1px solid var(--danger);
     color: var(--danger);
+}
+
+.btn-danger:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+.btn-create {
+    background-color: #D08C60; /* Sophisticated Muted Orange */
+    color: var(--bg-primary);
+    border: 1px solid #D08C60;
+}
+
+.btn-create:hover {
+    background-color: #E09D70;
+    border-color: #E09D70;
+    color: var(--bg-primary);
+}
+
+.btn-load {
+    background-color: #7F9CA2; /* Sophisticated Muted Teal/Slate */
+    color: var(--bg-primary);
+    border: 1px solid #7F9CA2;
+}
+
+.btn-load:hover {
+    background-color: #8FAFB6;
+    border-color: #8FAFB6;
+    color: var(--bg-primary);
+}
+
+.btn-pause {
+    background-color: #C97C5D; /* Sophisticated orange with gray hint */
+    color: #0a192f;
+    border: none;
+}
+
+.btn-pause:hover {
+    background-color: #b06a4e;
+}
+
+.btn-exit {
+    background-color: #593E3E; /* Sophisticated dark grey-red */
+    color: #e6f1ff;
+    border: none;
+}
+
+.btn-exit:hover {
+    background-color: #452d2d;
+}
+
+.btn-switch {
+    background-color: #3E606F; /* Sophisticated Dark Cyan/Blue */
+    color: #e6f1ff;
+    border: none;
+}
+
+.btn-switch:hover {
+    background-color: #2f4955;
+}
+
+.btn-export {
+    background-color: #4A5568; /* Sophisticated Slate */
+    color: #e6f1ff;
+    border: none;
+}
+
+.btn-export:hover {
+    background-color: #2D3748;
+}
+
+.btn-continue {
+    background-color: #557C83; /* Sophisticated Muted Teal */
+    color: #e6f1ff;
+    border: none;
+}
+
+.btn-continue:hover {
+    background-color: #3E6066;
+}
+
+.btn-abort {
+    background-color: #BC5D5D; /* Sophisticated Muted Red */
+    color: var(--bg-primary);
+    border: 1px solid #BC5D5D;
+}
+
+.btn-abort:hover {
+    background-color: #CD6E6E;
+    border-color: #CD6E6E;
+    color: var(--bg-primary);
+}
+
+.btn-view {
+    background-color: #5C7C8A; /* Sophisticated Muted Slate */
+    color: var(--bg-primary);
+    border: 1px solid #5C7C8A;
+}
+
+.btn-view:hover {
+    background-color: #6D8D9B;
+    border-color: #6D8D9B;
+    color: var(--bg-primary);
+}
+
+.btn-close {
+    background-color: #475569; /* Dark Slate */
+    color: #E2E8F0;
+    border: 1px solid #475569;
+}
+
+.btn-close:hover {
+    background-color: #58687F;
+    border-color: #58687F;
+    color: #E2E8F0;
+}
+
+.btn-delete-solid {
+    background-color: #800020; /* Burgundy */
+    color: #FFFFFF;
+    border: 1px solid #800020;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.btn-delete-solid:hover {
+    background-color: #990026;
+    border-color: #990026;
+    color: #FFFFFF;
 }
 
 /* Cards */
@@ -216,9 +351,33 @@ input[type="text"], textarea, input[type="file"] {
 }
 
 .results-table th {
-    background-color: var(--bg-secondary);
-    color: var(--accent);
+    background-color: #334155; /* Sophisticated Slate Blue */
+    color: #E2E8F0; /* Sophisticated Cool White */
     font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.results-table th:hover {
+    background-color: #475569;
+}
+
+.results-table th::after {
+    content: '↕';
+    position: absolute;
+    right: 8px;
+    opacity: 0.3;
+}
+
+.results-table th.asc::after {
+    content: '↑';
+    opacity: 1;
+}
+
+.results-table th.desc::after {
+    content: '↓';
+    opacity: 1;
 }
 
 .results-table tr:hover {
@@ -242,4 +401,167 @@ input[type="text"], textarea, input[type="file"] {
     height: 100%;
     background: var(--accent);
     transition: width 0.3s ease;
+}
+
+.dimension-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.dimension-grid.compact {
+    margin-top: 1rem;
+}
+
+.dimension-card {
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+}
+
+.dimension-card.complete {
+    border-color: var(--accent);
+}
+
+.dimension-card h3 {
+    margin-top: 0;
+}
+
+.dimension-card small {
+    color: var(--text-secondary);
+}
+
+.dimension-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.badge {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: #6B705C; /* Sophisticated Muted Green */
+    color: #e6f1ff;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.alert-info {
+    background-color: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.4);
+}
+
+/* Certainty Meter */
+.info-icon {
+    cursor: help;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    border-bottom: 1px dotted var(--text-secondary);
+}
+
+.certainty-container {
+    display: flex;
+    align-items: center;
+    height: 1.5rem; /* Match text height */
+}
+
+.certainty-svg .bar {
+    fill: var(--text-secondary);
+    opacity: 0.2;
+    transition: fill 0.3s, opacity 0.3s;
+}
+
+.certainty-svg .bar.filled {
+    fill: #D8C3A5; /* Sophisticated Muted Gold */
+    opacity: 1;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    font-size: 0.85rem;
+    margin-top: 3rem;
+}
+
+.chart-container {
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #334155; /* Sophisticated Slate Blue border */
+    margin: 2rem 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Toggle Switch */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #334155; /* Slate Blue background for off state */
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #64ffda; /* Accent color for on state */
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #64ffda;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.toggle-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }

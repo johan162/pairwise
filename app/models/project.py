@@ -9,34 +9,96 @@ import pandas as pd
 from .ranking import RankingEngine
 
 class Project:
-    def __init__(self, name: str, description: str, tasks_file: Optional[str] = None):
+    DIMENSIONS = ('complexity', 'value')
+
+    def __init__(self, name: str, description: str, tasks_file: Optional[str] = None, state_file: Optional[str] = None, created_at: Optional[str] = None):
         self.name = name
         self.description = description
         self.tasks_file = tasks_file
+        self.state_file = state_file
         self.tasks: List[Dict[str, Any]] = []
         self.complexity_engine: Optional[RankingEngine] = None
         self.value_engine: Optional[RankingEngine] = None
         self.current_dimension = 'complexity' # or 'value'
-        self.created_at = datetime.now().isoformat()
+        self.created_at = created_at if created_at else datetime.now().isoformat()
         
         if tasks_file:
             self.load_tasks(tasks_file)
 
     def load_tasks(self, filepath: str):
         df = pd.read_csv(filepath)
-        # Assuming CSV has 'id' and 'description' columns
+        normalized_cols = {col.strip().lower(): col for col in df.columns}
+        if 'id' in normalized_cols and 'description' in normalized_cols:
+            df = df.rename(columns={
+                normalized_cols['id']: 'id',
+                normalized_cols['description']: 'description'
+            })
+        else:
+            # Fallback for CSV files without headers (or with unexpected labels)
+            df = pd.read_csv(filepath, header=None, names=['id', 'description'], usecols=[0, 1])
+
+        df['id'] = df['id'].astype(str).str.strip()
+        df['description'] = df['description'].astype(str).str.strip()
+        df = df[df['id'] != '']
+        df = df[df['description'] != '']
+
         self.tasks = df.to_dict('records') # type: ignore
+        if not self.tasks:
+            raise ValueError(f"No tasks found in CSV file: {filepath}")
+
         task_ids = [str(t['id']) for t in self.tasks]
         self.complexity_engine = RankingEngine(task_ids)
         self.value_engine = RankingEngine(task_ids)
 
-    def get_current_engine(self) -> Optional[RankingEngine]:
-        if self.current_dimension == 'complexity':
-            return self.complexity_engine
-        else:
+    def get_engine_for_dimension(self, dimension: str) -> Optional[RankingEngine]:
+        if dimension == 'value':
             return self.value_engine
+        return self.complexity_engine
 
-    def save_state(self, filepath: str):
+    def get_current_engine(self) -> Optional[RankingEngine]:
+        return self.get_engine_for_dimension(self.current_dimension)
+
+    def get_other_dimension(self, dimension: str) -> str:
+        return 'value' if dimension == 'complexity' else 'complexity'
+
+    def get_dimension_summary(self, dimension: str) -> Dict[str, Any]:
+        engine = self.get_engine_for_dimension(dimension)
+        if engine is None:
+            return {
+                'progress': 0.0,
+                'complete': False,
+                'comparisons': 0,
+                'total': 0
+            }
+
+        return {
+            'complete': engine.is_complete(),
+            'progress': engine.get_progress(),
+            'comparisons': len(engine.comparisons),
+            'total': engine.estimated_total_comparisons()
+        }
+
+    def get_pending_dimensions(self) -> List[str]:
+        pending = []
+        for dimension in self.DIMENSIONS:
+            engine = self.get_engine_for_dimension(dimension)
+            if engine and not engine.is_complete():
+                pending.append(dimension)
+        return pending
+
+    def all_dimensions_complete(self) -> bool:
+        return len(self.get_pending_dimensions()) == 0
+
+    def is_dimension_complete(self, dimension: str) -> bool:
+        engine = self.get_engine_for_dimension(dimension)
+        return bool(engine and engine.is_complete())
+
+    def save_state(self, filepath: str = None):
+        if filepath is None:
+            filepath = self.state_file
+        if filepath is None:
+            raise ValueError("No filepath provided for saving state")
+            
         complexity_engine = self.complexity_engine
         value_engine = self.value_engine
 
@@ -46,6 +108,7 @@ class Project:
         state = {
             'name': self.name,
             'description': self.description,
+            'created_at': self.created_at,
             'tasks': self.tasks,
             'current_dimension': self.current_dimension,
             'complexity_state': {
@@ -67,7 +130,9 @@ class Project:
         with open(filepath, 'r') as f:
             state = json.load(f)
             
-        project = cls(state['name'], state['description'])
+        project = cls(state['name'], state['description'], state_file=filepath)
+        if 'created_at' in state:
+            project.created_at = state['created_at']
         project.tasks = state['tasks']
         project.current_dimension = state.get('current_dimension', 'complexity')
         

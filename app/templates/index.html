@@ -9,30 +9,56 @@
     <div class="card">
         <h2>Current Project: {{ project.name }}</h2>
         <p>{{ project.description }}</p>
+
+        <div class="dimension-grid">
+            {% for key, label in dimension_labels.items() %}
+                {% set status = dimension_status[key] %}
+                <div class="dimension-card {% if status.complete %}complete{% endif %}">
+                    <h3>{{ label }}</h3>
+                    <p>{{ "%.1f"|format(status.progress) }}% complete</p>
+                    <small>{{ status.comparisons }} / {{ status.total }} comparisons</small>
+                    <div class="dimension-actions">
+                        {% if status.complete %}
+                        <span class="badge">Finished</span>
+                        <a href="{{ url_for('main.results') }}" class="btn btn-close">View Results</a>
+                        {% else %}
+                        <a href="{{ url_for('main.switch_dimension', dimension=key, target='compare') }}" class="btn btn-continue">Start / Continue</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
         <div class="actions">
-            <a href="{{ url_for('main.compare') }}" class="btn btn-primary">Continue Voting</a>
-            <a href="{{ url_for('main.results') }}" class="btn btn-secondary">View Results</a>
+            <a href="{{ url_for('main.results') }}" class="btn btn-close">View Results</a>
+            <a href="{{ url_for('main.close_project') }}" class="btn btn-close">Close Project</a>
+            <a href="{{ url_for('main.delete_project') }}" class="btn btn-delete-solid" onclick="return confirm('Are you sure? This will delete all progress.')">Delete Project</a>
         </div>
     </div>
     {% else %}
+    
+    {% if saved_projects %}
     <div class="card">
-        <h2>Start New Project</h2>
-        <form action="{{ url_for('main.new_project') }}" method="POST" enctype="multipart/form-data">
+        <h2>Load Saved Project</h2>
+        <form action="{{ url_for('main.load_selected_project') }}" method="POST">
             <div class="form-group">
-                <label for="name">Project Name</label>
-                <input type="text" id="name" name="name" required>
+                <label for="project_select">Select a project to resume:</label>
+                <select name="filename" id="project_select" required style="width: 100%; padding: 10px; background-color: var(--bg-primary); border: 1px solid var(--text-secondary); color: var(--text-primary); border-radius: 4px; margin-bottom: 1rem;">
+                    <option value="" disabled selected>Choose a project...</option>
+                    {% for p in saved_projects %}
+                    <option value="{{ p.filename }}">
+                        {{ p.name }} ({{ p.created_at[:10] }}) {% if p.complete %}[Complete]{% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="file">Tasks CSV File</label>
-                <input type="file" id="file" name="file" accept=".csv" required>
-                <small>CSV must have 'id' and 'description' columns.</small>
-            </div>
-            <button type="submit" class="btn btn-primary">Create Project</button>
+            <button type="submit" class="btn btn-load">Load Project</button>
         </form>
+    </div>
+    {% endif %}
+
+    <div class="action-container" style="margin-top: 2rem; text-align: center;">
+        <a href="{{ url_for('main.create_project_page') }}" class="btn btn-create" style="padding: 1rem 2rem; font-size: 1.1rem;">Create New Project</a>
     </div>
     {% endif %}
 </div>

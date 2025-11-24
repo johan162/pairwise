@@ -3,22 +3,57 @@
 {% block content %}
 <div class="results-container">
     <h1>Ranking Results</h1>
+    {% if pending_dimension %}
+    <div class="alert alert-info">
+        {{ dimension_labels[pending_dimension] }} ranking is not finished.
+        <a href="{{ url_for('main.switch_dimension', dimension=pending_dimension, target='compare') }}" class="btn btn-continue">Continue {{ dimension_labels[pending_dimension] }}</a>
+    </div>
+    {% endif %}
+
+    <div class="dimension-grid compact">
+        {% for key, label in dimension_labels.items() %}
+            {% set status = dimension_status[key] %}
+            <div class="dimension-card {% if status.complete %}complete{% endif %}">
+                <h3>{{ label }}</h3>
+                <p>{{ "%.1f"|format(status.progress) }}% complete</p>
+                <small>{{ status.comparisons }} / {{ status.total }} comparisons</small>
+                <div class="dimension-actions">
+                    {% if status.complete %}
+                    <span class="badge">Finished</span>
+                    {% else %}
+                    <a href="{{ url_for('main.switch_dimension', dimension=key, target='compare') }}" class="btn btn-continue">Continue {{ label }}</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
     
     <div class="chart-container">
         <!-- Placeholder for a scatter plot -->
         <canvas id="resultsChart"></canvas>
+        <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox" id="toggleLabelsCheckbox" onchange="toggleLabels()">
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show ID Labels</span>
+        </div>
     </div>
 
     <div class="table-container">
-        <table class="results-table">
+        <div style="text-align: right; margin-bottom: 1rem;">
+            <a href="{{ url_for('main.export_results', format='csv') }}" class="btn btn-export">Export CSV</a>
+            <a href="{{ url_for('main.export_results', format='markdown') }}" class="btn btn-export">Export Markdown</a>
+        </div>
+        <table class="results-table" id="resultsTable">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Description</th>
-                    <th>Complexity Rank</th>
-                    <th>Value Rank</th>
-                    <th>Complexity Score</th>
-                    <th>Value Score</th>
+                    <th onclick="sortTable(0)">ID</th>
+                    <th onclick="sortTable(1)">Description</th>
+                    <th onclick="sortTable(2)">Complexity Rank</th>
+                    <th onclick="sortTable(3)">Value Rank</th>
+                    <th onclick="sortTable(4)">Complexity Score</th>
+                    <th onclick="sortTable(5)">Value Score</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,15 +72,19 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 <script id="results-data" type="application/json">
     {{ results|tojson }}
 </script>
 <script>
+    // Register the plugin explicitly
+    Chart.register(ChartDataLabels);
+
     const data = JSON.parse(document.getElementById('results-data').textContent);
     
     const ctx = document.getElementById('resultsChart').getContext('2d');
-    new Chart(ctx, {
+    const resultsChart = new Chart(ctx, {
         type: 'scatter',
         data: {
             datasets: [{
@@ -56,12 +95,28 @@
                     description: d.description,
                     id: d.id
                 })),
-                backgroundColor: '#64ffda'
+                backgroundColor: '#64ffda',
+                pointRadius: 6,
+                pointHoverRadius: 8
             }]
         },
         options: {
             responsive: true,
             plugins: {
+                datalabels: {
+                    display: false,
+                    anchor: 'end',
+                    align: 'top',
+                    offset: 4,
+                    color: '#ccd6f6',
+                    formatter: function(value, context) {
+                        return context.dataset.data[context.dataIndex].id;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -73,7 +128,10 @@
                 title: {
                     display: true,
                     text: 'Value vs Complexity',
-                    color: '#ccd6f6'
+                    color: '#ccd6f6',
+                    font: {
+                        size: 24
+                    }
                 }
             },
             scales: {
@@ -83,7 +141,14 @@
                         text: 'Technical Complexity (Score)',
                         color: '#8892b0'
                     },
-                    grid: { color: '#233554' },
+                    grid: { 
+                        color: '#475569',
+                        tickLength: 0,
+                        borderDash: [2, 2]
+                    },
+                    border: {
+                        dash: [2, 2]
+                    },
                     ticks: { color: '#8892b0' }
                 },
                 y: {
@@ -92,11 +157,92 @@
                         text: 'Business Value (Score)',
                         color: '#8892b0'
                     },
-                    grid: { color: '#233554' },
+                    grid: { 
+                        color: '#475569',
+                        tickLength: 0,
+                        borderDash: [2, 2]
+                    },
+                    border: {
+                        dash: [2, 2]
+                    },
                     ticks: { color: '#8892b0' }
                 }
             }
         }
     });
+
+    function toggleLabels() {
+        const checkbox = document.getElementById('toggleLabelsCheckbox');
+        resultsChart.options.plugins.datalabels.display = checkbox.checked;
+        resultsChart.update();
+    }
+
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("resultsTable");
+        switching = true;
+        dir = "asc";
+        
+        // Reset all headers classes
+        var headers = table.getElementsByTagName("TH");
+        for (var h = 0; h < headers.length; h++) {
+            if (h !== n) {
+                headers[h].classList.remove("asc", "desc");
+            }
+        }
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            // Loop through all table rows (except the first, which contains table headers):
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                
+                var xContent = x.innerText.toLowerCase();
+                var yContent = y.innerText.toLowerCase();
+                var xNum = parseFloat(xContent);
+                var yNum = parseFloat(yContent);
+                
+                // Check if both are valid numbers (and not empty strings which parseFloat might handle weirdly or return NaN)
+                var isNum = !isNaN(xNum) && !isNaN(yNum) && xContent.trim() !== "" && yContent.trim() !== "";
+
+                if (dir == "asc") {
+                    if (isNum) {
+                        if (xNum > yNum) { shouldSwitch = true; break; }
+                    } else {
+                        if (xContent > yContent) { shouldSwitch = true; break; }
+                    }
+                } else if (dir == "desc") {
+                    if (isNum) {
+                        if (xNum < yNum) { shouldSwitch = true; break; }
+                    } else {
+                        if (xContent < yContent) { shouldSwitch = true; break; }
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount ++;
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+        
+        // Toggle class on the clicked header
+        var header = headers[n];
+        if (dir === "asc") {
+            header.classList.remove("desc");
+            header.classList.add("asc");
+        } else {
+            header.classList.remove("asc");
+            header.classList.add("desc");
+        }
+    }
 </script>
 {% endblock %}

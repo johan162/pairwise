@@ -14,9 +14,8 @@
             <div class="nav-links">
                 {% if project %}
                 <span class="project-name">{{ project.name }}</span>
-                <a href="{{ url_for('main.compare') }}">Vote</a>
                 <a href="{{ url_for('main.results') }}">Results</a>
-                <a href="{{ url_for('main.reset') }}" class="btn-danger">Close Project</a>
+                <a href="{{ url_for('main.close_project') }}">Close Project</a>
                 {% endif %}
             </div>
         </div>
@@ -36,7 +35,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Pairwise Ranking System</p>
+            <p>&copy; 2025 Johan Persson - Pairwise Ranking System</p>
         </div>
     </footer>
 </body>
