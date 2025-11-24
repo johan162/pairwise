@@ -9,8 +9,27 @@
     <div class="card">
         <h2>Current Project: {{ project.name }}</h2>
         <p>{{ project.description }}</p>
+
+        <div class="dimension-grid">
+            {% for key, label in dimension_labels.items() %}
+                {% set status = dimension_status[key] %}
+                <div class="dimension-card {% if status.complete %}complete{% endif %}">
+                    <h3>{{ label }}</h3>
+                    <p>{{ "%.1f"|format(status.progress) }}% complete</p>
+                    <small>{{ status.comparisons }} / {{ status.total }} comparisons</small>
+                    <div class="dimension-actions">
+                        {% if status.complete %}
+                        <span class="badge">Finished</span>
+                        <a href="{{ url_for('main.results') }}" class="btn btn-secondary">View Results</a>
+                        {% else %}
+                        <a href="{{ url_for('main.switch_dimension', dimension=key, target='compare') }}" class="btn btn-primary">Start / Continue</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
         <div class="actions">
-            <a href="{{ url_for('main.compare') }}" class="btn btn-primary">Continue Voting</a>
             <a href="{{ url_for('main.results') }}" class="btn btn-secondary">View Results</a>
         </div>
     </div>

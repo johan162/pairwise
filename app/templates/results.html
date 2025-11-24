@@ -3,6 +3,30 @@
 {% block content %}
 <div class="results-container">
     <h1>Ranking Results</h1>
+    {% if pending_dimension %}
+    <div class="alert alert-info">
+        {{ dimension_labels[pending_dimension] }} ranking is not finished.
+        <a href="{{ url_for('main.switch_dimension', dimension=pending_dimension, target='compare') }}" class="btn btn-primary">Continue {{ dimension_labels[pending_dimension] }}</a>
+    </div>
+    {% endif %}
+
+    <div class="dimension-grid compact">
+        {% for key, label in dimension_labels.items() %}
+            {% set status = dimension_status[key] %}
+            <div class="dimension-card {% if status.complete %}complete{% endif %}">
+                <h3>{{ label }}</h3>
+                <p>{{ "%.1f"|format(status.progress) }}% complete</p>
+                <small>{{ status.comparisons }} / {{ status.total }} comparisons</small>
+                <div class="dimension-actions">
+                    {% if status.complete %}
+                    <span class="badge">Finished</span>
+                    {% else %}
+                    <a href="{{ url_for('main.switch_dimension', dimension=key, target='compare') }}" class="btn btn-primary">Continue {{ label }}</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
     
     <div class="chart-container">
         <!-- Placeholder for a scatter plot -->

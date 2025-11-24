@@ -127,11 +127,20 @@ class RankingEngine:
              return float(val)
         return 0.0
 
-    def get_progress(self) -> float:
+    def total_comparisons(self) -> int:
         n = len(self.items)
-        if n < 2:
+        return max(0, int(n * (n - 1) / 2))
+
+    def is_complete(self) -> bool:
+        total = self.total_comparisons()
+        if total == 0:
+            return True
+        return len(self.comparisons) >= total
+
+    def get_progress(self) -> float:
+        total_comparisons = self.total_comparisons()
+        if total_comparisons == 0:
             return 100.0
-        total_comparisons = n * (n - 1) / 2
         return (len(self.comparisons) / total_comparisons) * 100
 
     def get_inconsistency_level(self) -> float:

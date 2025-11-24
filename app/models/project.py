@@ -9,6 +9,8 @@ import pandas as pd
 from .ranking import RankingEngine
 
 class Project:
+    DIMENSIONS = ('complexity', 'value')
+
     def __init__(self, name: str, description: str, tasks_file: Optional[str] = None):
         self.name = name
         self.description = description
@@ -24,17 +26,72 @@ class Project:
 
     def load_tasks(self, filepath: str):
         df = pd.read_csv(filepath)
-        # Assuming CSV has 'id' and 'description' columns
+        normalized_cols = {col.strip().lower(): col for col in df.columns}
+        if 'id' in normalized_cols and 'description' in normalized_cols:
+            df = df.rename(columns={
+                normalized_cols['id']: 'id',
+                normalized_cols['description']: 'description'
+            })
+        else:
+            # Fallback for CSV files without headers (or with unexpected labels)
+            df = pd.read_csv(filepath, header=None, names=['id', 'description'], usecols=[0, 1])
+
+        df['id'] = df['id'].astype(str).str.strip()
+        df['description'] = df['description'].astype(str).str.strip()
+        df = df[df['id'] != '']
+        df = df[df['description'] != '']
+
         self.tasks = df.to_dict('records') # type: ignore
+        if not self.tasks:
+            raise ValueError(f"No tasks found in CSV file: {filepath}")
+
         task_ids = [str(t['id']) for t in self.tasks]
         self.complexity_engine = RankingEngine(task_ids)
         self.value_engine = RankingEngine(task_ids)
 
-    def get_current_engine(self) -> Optional[RankingEngine]:
-        if self.current_dimension == 'complexity':
-            return self.complexity_engine
-        else:
+    def get_engine_for_dimension(self, dimension: str) -> Optional[RankingEngine]:
+        if dimension == 'value':
             return self.value_engine
+        return self.complexity_engine
+
+    def get_current_engine(self) -> Optional[RankingEngine]:
+        return self.get_engine_for_dimension(self.current_dimension)
+
+    def get_other_dimension(self, dimension: str) -> str:
+        return 'value' if dimension == 'complexity' else 'complexity'
+
+    def get_dimension_summary(self, dimension: str) -> Dict[str, Any]:
+        engine = self.get_engine_for_dimension(dimension)
+        if engine is None:
+            return {
+                'progress': 0.0,
+                'complete': False,
+                'comparisons': 0,
+                'total': 0
+            }
+
+        total = engine.total_comparisons()
+        return {
+            'progress': engine.get_progress(),
+            'complete': engine.is_complete(),
+            'comparisons': len(engine.comparisons),
+            'total': total
+        }
+
+    def get_pending_dimensions(self) -> List[str]:
+        pending = []
+        for dimension in self.DIMENSIONS:
+            engine = self.get_engine_for_dimension(dimension)
+            if engine and not engine.is_complete():
+                pending.append(dimension)
+        return pending
+
+    def all_dimensions_complete(self) -> bool:
+        return len(self.get_pending_dimensions()) == 0
+
+    def is_dimension_complete(self, dimension: str) -> bool:
+        engine = self.get_engine_for_dimension(dimension)
+        return bool(engine and engine.is_complete())
 
     def save_state(self, filepath: str):
         complexity_engine = self.complexity_engine

@@ -5,7 +5,7 @@
     <div class="header-stats">
         <div class="stat">
             <span class="label">Dimension</span>
-            <span class="value">{{ dimension|title }}</span>
+            <span class="value">{{ dimension_label }}</span>
             <div class="dimension-switch">
                 {% if dimension == 'complexity' %}
                 <a href="{{ url_for('main.switch_dimension', dimension='value') }}">Switch to Value</a>
@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <h2>Which task has higher {{ dimension }}?</h2>
+    <h2>Which task has higher {{ dimension_label }}?</h2>
 
     <div class="cards-wrapper">
         <form action="{{ url_for('main.vote') }}" method="POST" class="card-form">
