@@ -52,30 +52,13 @@
                     {% endfor %}
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Load Project</button>
+            <button type="submit" class="btn btn-load">Load Project</button>
         </form>
     </div>
-    <div style="text-align: center; margin: 2rem 0; color: var(--text-secondary); font-weight: bold;">OR</div>
     {% endif %}
 
-    <div class="card">
-        <h2>Start New Project</h2>
-        <form action="{{ url_for('main.new_project') }}" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="name">Project Name</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="file">Tasks CSV File</label>
-                <input type="file" id="file" name="file" accept=".csv" required>
-                <small>CSV must have 'id' and 'description' columns.</small>
-            </div>
-            <button type="submit" class="btn btn-primary">Create Project</button>
-        </form>
+    <div class="action-container" style="margin-top: 2rem; text-align: center;">
+        <a href="{{ url_for('main.create_project_page') }}" class="btn btn-create" style="padding: 1rem 2rem; font-size: 1.1rem;">Create New Project</a>
     </div>
     {% endif %}
 </div>

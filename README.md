@@ -1,6 +1,8 @@
 # Pairwise Ranking System
 
-A modern Python application for ranking requirements based on Business Value and Technical Complexity using Active Bayesian Ranking. This system minimizes the number of manual comparisons needed to achieve a statistically significant ranking by using uncertainty sampling.
+A Python application for ranking requirements based on Business Value and Technical Complexity using Active Bayesian Ranking. 
+This system minimizes the number of manual comparisons needed to achieve a statistically significant ranking by using uncertainty sampling.
+The resulting ranking is not perfect as such a ordering would requies O(nlgn)) comparisons
 
 ## Features
 

@@ -103,6 +103,30 @@ body {
     background-color: rgba(255, 107, 107, 0.1);
 }
 
+.btn-create {
+    background-color: #D08C60; /* Sophisticated Muted Orange */
+    color: var(--bg-primary);
+    border: 1px solid #D08C60;
+}
+
+.btn-create:hover {
+    background-color: #E09D70;
+    border-color: #E09D70;
+    color: var(--bg-primary);
+}
+
+.btn-load {
+    background-color: #7F9CA2; /* Sophisticated Muted Teal/Slate */
+    color: var(--bg-primary);
+    border: 1px solid #7F9CA2;
+}
+
+.btn-load:hover {
+    background-color: #8FAFB6;
+    border-color: #8FAFB6;
+    color: var(--bg-primary);
+}
+
 .btn-pause {
     background-color: #C97C5D; /* Sophisticated orange with gray hint */
     color: #0a192f;
@@ -151,6 +175,18 @@ body {
 
 .btn-continue:hover {
     background-color: #3E6066;
+}
+
+.btn-abort {
+    background-color: #BC5D5D; /* Sophisticated Muted Red */
+    color: var(--bg-primary);
+    border: 1px solid #BC5D5D;
+}
+
+.btn-abort:hover {
+    background-color: #CD6E6E;
+    border-color: #CD6E6E;
+    color: var(--bg-primary);
 }
 
 /* Cards */

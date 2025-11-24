@@ -11,7 +11,7 @@ from .ranking import RankingEngine
 class Project:
     DIMENSIONS = ('complexity', 'value')
 
-    def __init__(self, name: str, description: str, tasks_file: Optional[str] = None, state_file: Optional[str] = None):
+    def __init__(self, name: str, description: str, tasks_file: Optional[str] = None, state_file: Optional[str] = None, created_at: Optional[str] = None):
         self.name = name
         self.description = description
         self.tasks_file = tasks_file
@@ -20,7 +20,7 @@ class Project:
         self.complexity_engine: Optional[RankingEngine] = None
         self.value_engine: Optional[RankingEngine] = None
         self.current_dimension = 'complexity' # or 'value'
-        self.created_at = datetime.now().isoformat()
+        self.created_at = created_at if created_at else datetime.now().isoformat()
         
         if tasks_file:
             self.load_tasks(tasks_file)

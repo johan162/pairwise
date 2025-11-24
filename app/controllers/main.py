@@ -4,6 +4,7 @@ from app.models.project import Project
 import os
 import csv
 import io
+from datetime import date
 from flask import Response
 
 bp = Blueprint('main', __name__)
@@ -105,36 +106,38 @@ def close_project():
     current_project = None
     return redirect(url_for('main.index'))
 
-@bp.route('/new', methods=['POST'])
+@bp.route('/create', methods=['GET'])
+def create_project_page():
+    """Render the create new project page."""
+    return render_template('create.html', today=date.today().isoformat())
+
+@bp.route('/new_project', methods=['POST'])
 def new_project():
     global current_project
     name = request.form.get('name')
     description = request.form.get('description')
-    file = request.files['file']
-    
-    if file and file.filename and name:
-        os.makedirs(DATA_DIR, exist_ok=True)
-        os.makedirs(PROJECTS_DIR, exist_ok=True)
-        
-        # Save CSV
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(DATA_DIR, filename)
-        file.save(filepath)
-        
-        # Create Project
-        # Generate a unique filename for the project state
-        import uuid
-        project_filename = f"{secure_filename(name)}_{uuid.uuid4().hex[:8]}.json"
-        state_filepath = os.path.join(PROJECTS_DIR, project_filename)
-        
-        current_project = Project(name, description or "", filepath, state_file=state_filepath)
-        current_project.save_state()
-        
-        flash("Project created. Choose a dimension to begin comparisons.", "success")
-        return redirect(url_for('main.index'))
-    
-    flash("Please provide a project name and CSV file.", "warning")
-    return redirect(url_for('main.index'))
+    created_at = request.form.get('created_at')
+    file = request.files.get('file')
+
+    if not name:
+        flash('Project name is required')
+        return redirect(url_for('main.create_project_page'))
+
+    if not file or not file.filename:
+        flash('CSV file is required')
+        return redirect(url_for('main.create_project_page'))
+
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(DATA_DIR, filename)
+    file.save(filepath)
+
+    try:
+        current_project = Project(name, description or "", filepath, created_at=created_at)
+        current_project.save_state()  # Save immediately to create the project file
+        return redirect(url_for('main.compare'))
+    except Exception as e:
+        flash(f"Error creating project: {str(e)}")
+        return redirect(url_for('main.create_project_page'))
 
 @bp.route('/compare')
 def compare():
