@@ -2,6 +2,9 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from app.models.project import Project
 import os
+import csv
+import io
+from flask import Response
 
 bp = Blueprint('main', __name__)
 
@@ -289,3 +292,74 @@ def load_selected_project():
     if filename:
         return redirect(url_for('main.load_project', filename=filename))
     return redirect(url_for('main.index'))
+
+@bp.route('/export/<format>')
+def export_results(format):
+    global current_project
+    project = current_project
+    if project is None:
+        return redirect(url_for('main.index'))
+        
+    if project.complexity_engine is None or project.value_engine is None:
+        return redirect(url_for('main.index'))
+
+    # Get rankings for both dimensions
+    complexity_ranking = project.complexity_engine.get_ranking()
+    value_ranking = project.value_engine.get_ranking()
+    
+    # Create a combined data structure
+    results = []
+    for task in project.tasks:
+        tid = task['id']
+        c_rank = complexity_ranking.index(tid) + 1
+        v_rank = value_ranking.index(tid) + 1
+        c_score = project.complexity_engine.mu[tid]
+        v_score = project.value_engine.mu[tid]
+        
+        results.append({
+            'id': tid,
+            'description': task['description'],
+            'complexity_rank': c_rank,
+            'value_rank': v_rank,
+            'complexity_score': c_score,
+            'value_score': v_score
+        })
+    
+    # Sort by Value Rank (default)
+    results.sort(key=lambda x: x['value_rank'])
+
+    if format == 'csv':
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['ID', 'Description', 'Complexity Rank', 'Value Rank', 'Complexity Score', 'Value Score'])
+        for row in results:
+            writer.writerow([
+                row['id'], 
+                row['description'], 
+                row['complexity_rank'], 
+                row['value_rank'], 
+                f"{row['complexity_score']:.2f}", 
+                f"{row['value_score']:.2f}"
+            ])
+        
+        return Response(
+            output.getvalue(),
+            mimetype="text/csv",
+            headers={"Content-disposition": f"attachment; filename={secure_filename(project.name)}_results.csv"}
+        )
+        
+    elif format == 'markdown':
+        output = io.StringIO()
+        output.write(f"# Ranking Results: {project.name}\n\n")
+        output.write("| ID | Description | Complexity Rank | Value Rank | Complexity Score | Value Score |\n")
+        output.write("|---|---|---|---|---|---|\n")
+        for row in results:
+            output.write(f"| {row['id']} | {row['description']} | {row['complexity_rank']} | {row['value_rank']} | {row['complexity_score']:.2f} | {row['value_score']:.2f} |\n")
+            
+        return Response(
+            output.getvalue(),
+            mimetype="text/markdown",
+            headers={"Content-disposition": f"attachment; filename={secure_filename(project.name)}_results.md"}
+        )
+    
+    return redirect(url_for('main.results'))

@@ -133,6 +133,26 @@ body {
     background-color: #2f4955;
 }
 
+.btn-export {
+    background-color: #4A5568; /* Sophisticated Slate */
+    color: #e6f1ff;
+    border: none;
+}
+
+.btn-export:hover {
+    background-color: #2D3748;
+}
+
+.btn-continue {
+    background-color: #557C83; /* Sophisticated Muted Teal */
+    color: #e6f1ff;
+    border: none;
+}
+
+.btn-continue:hover {
+    background-color: #3E6066;
+}
+
 /* Cards */
 .card {
     background-color: var(--card-bg);
@@ -256,8 +276,8 @@ input[type="text"], textarea, input[type="file"] {
 }
 
 .results-table th {
-    background-color: var(--bg-secondary);
-    color: var(--accent);
+    background-color: #334155; /* Sophisticated Slate Blue */
+    color: #E2E8F0; /* Sophisticated Cool White */
     font-weight: 600;
     cursor: pointer;
     user-select: none;
@@ -265,7 +285,7 @@ input[type="text"], textarea, input[type="file"] {
 }
 
 .results-table th:hover {
-    background-color: var(--card-hover);
+    background-color: #475569;
 }
 
 .results-table th::after {
@@ -348,8 +368,8 @@ input[type="text"], textarea, input[type="file"] {
 .badge {
     padding: 0.3rem 0.7rem;
     border-radius: 999px;
-    background: var(--accent);
-    color: var(--bg-primary);
+    background: #6B705C; /* Sophisticated Muted Green */
+    color: #e6f1ff;
     font-size: 0.75rem;
     font-weight: 600;
 }

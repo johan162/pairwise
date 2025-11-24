@@ -22,7 +22,7 @@
                         <span class="badge">Finished</span>
                         <a href="{{ url_for('main.results') }}" class="btn btn-secondary">View Results</a>
                         {% else %}
-                        <a href="{{ url_for('main.switch_dimension', dimension=key, target='compare') }}" class="btn btn-primary">Start / Continue</a>
+                        <a href="{{ url_for('main.switch_dimension', dimension=key, target='compare') }}" class="btn btn-continue">Start / Continue</a>
                         {% endif %}
                     </div>
                 </div>

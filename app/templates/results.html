@@ -6,7 +6,7 @@
     {% if pending_dimension %}
     <div class="alert alert-info">
         {{ dimension_labels[pending_dimension] }} ranking is not finished.
-        <a href="{{ url_for('main.switch_dimension', dimension=pending_dimension, target='compare') }}" class="btn btn-primary">Continue {{ dimension_labels[pending_dimension] }}</a>
+        <a href="{{ url_for('main.switch_dimension', dimension=pending_dimension, target='compare') }}" class="btn btn-continue">Continue {{ dimension_labels[pending_dimension] }}</a>
     </div>
     {% endif %}
 
@@ -21,7 +21,7 @@
                     {% if status.complete %}
                     <span class="badge">Finished</span>
                     {% else %}
-                    <a href="{{ url_for('main.switch_dimension', dimension=key, target='compare') }}" class="btn btn-primary">Continue {{ label }}</a>
+                    <a href="{{ url_for('main.switch_dimension', dimension=key, target='compare') }}" class="btn btn-continue">Continue {{ label }}</a>
                     {% endif %}
                 </div>
             </div>
@@ -34,6 +34,10 @@
     </div>
 
     <div class="table-container">
+        <div style="text-align: right; margin-bottom: 1rem;">
+            <a href="{{ url_for('main.export_results', format='csv') }}" class="btn btn-export">Export CSV</a>
+            <a href="{{ url_for('main.export_results', format='markdown') }}" class="btn btn-export">Export Markdown</a>
+        </div>
         <table class="results-table" id="resultsTable">
             <thead>
                 <tr>
