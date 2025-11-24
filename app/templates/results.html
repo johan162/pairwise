@@ -31,6 +31,13 @@
     <div class="chart-container">
         <!-- Placeholder for a scatter plot -->
         <canvas id="resultsChart"></canvas>
+        <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox" id="toggleLabelsCheckbox" onchange="toggleLabels()">
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show ID Labels</span>
+        </div>
     </div>
 
     <div class="table-container">
@@ -66,14 +73,18 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 <script id="results-data" type="application/json">
     {{ results|tojson }}
 </script>
 <script>
+    // Register the plugin explicitly
+    Chart.register(ChartDataLabels);
+
     const data = JSON.parse(document.getElementById('results-data').textContent);
     
     const ctx = document.getElementById('resultsChart').getContext('2d');
-    new Chart(ctx, {
+    const resultsChart = new Chart(ctx, {
         type: 'scatter',
         data: {
             datasets: [{
@@ -92,6 +103,20 @@
         options: {
             responsive: true,
             plugins: {
+                datalabels: {
+                    display: false,
+                    anchor: 'end',
+                    align: 'top',
+                    offset: 4,
+                    color: '#ccd6f6',
+                    formatter: function(value, context) {
+                        return context.dataset.data[context.dataIndex].id;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -145,6 +170,12 @@
             }
         }
     });
+
+    function toggleLabels() {
+        const checkbox = document.getElementById('toggleLabelsCheckbox');
+        resultsChart.options.plugins.datalabels.display = checkbox.checked;
+        resultsChart.update();
+    }
 
     function sortTable(n) {
         var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
