@@ -41,7 +41,7 @@ body {
 .brand {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--accent);
+    color: #D8C3A5; /* Sophisticated Muted Gold */
     text-decoration: none;
 }
 
@@ -101,6 +101,36 @@ body {
 
 .btn-danger:hover {
     background-color: rgba(255, 107, 107, 0.1);
+}
+
+.btn-pause {
+    background-color: #C97C5D; /* Sophisticated orange with gray hint */
+    color: #0a192f;
+    border: none;
+}
+
+.btn-pause:hover {
+    background-color: #b06a4e;
+}
+
+.btn-exit {
+    background-color: #593E3E; /* Sophisticated dark grey-red */
+    color: #e6f1ff;
+    border: none;
+}
+
+.btn-exit:hover {
+    background-color: #452d2d;
+}
+
+.btn-switch {
+    background-color: #3E606F; /* Sophisticated Dark Cyan/Blue */
+    color: #e6f1ff;
+    border: none;
+}
+
+.btn-switch:hover {
+    background-color: #2f4955;
 }
 
 /* Cards */
@@ -333,4 +363,14 @@ input[type="text"], textarea, input[type="file"] {
 .alert-info {
     background-color: rgba(100, 255, 218, 0.1);
     border: 1px solid rgba(100, 255, 218, 0.4);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    font-size: 0.85rem;
+    margin-top: 3rem;
 }

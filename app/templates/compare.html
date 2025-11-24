@@ -6,13 +6,6 @@
         <div class="stat">
             <span class="label">Dimension</span>
             <span class="value">{{ dimension_label }}</span>
-            <div class="dimension-switch">
-                {% if dimension == 'complexity' %}
-                <a href="{{ url_for('main.switch_dimension', dimension='value') }}">Switch to Value</a>
-                {% else %}
-                <a href="{{ url_for('main.switch_dimension', dimension='complexity') }}">Switch to Complexity</a>
-                {% endif %}
-            </div>
         </div>
         <div class="stat">
             <span class="label">Progress</span>
@@ -29,6 +22,14 @@
             <span class="label">Inconsistency</span>
             <span class="value warning">{{ "%.1f"|format(inconsistency) }}%</span>
         </div>
+    </div>
+
+    <div style="text-align: right; margin-top: -2rem; margin-bottom: 2rem;">
+        {% if dimension == 'complexity' %}
+        <a href="{{ url_for('main.switch_dimension', dimension='value') }}" class="btn btn-switch">Switch to Value</a>
+        {% else %}
+        <a href="{{ url_for('main.switch_dimension', dimension='complexity') }}" class="btn btn-switch">Switch to Complexity</a>
+        {% endif %}
     </div>
 
     <h2>Which task has higher {{ dimension_label }}?</h2>
@@ -56,8 +57,8 @@
     </div>
     
     <div class="skip-actions" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem;">
-        <a href="{{ url_for('main.results') }}" class="btn btn-secondary">Pause & View Results</a>
-        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Save & Exit</a>
+        <a href="{{ url_for('main.results') }}" class="btn btn-pause">Pause & View Results</a>
+        <a href="{{ url_for('main.index') }}" class="btn btn-exit">Save & Exit</a>
     </div>
 </div>
 
