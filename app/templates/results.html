@@ -65,7 +65,7 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script id="results-data" type="application/json">
     {{ results|tojson }}
 </script>
@@ -84,7 +84,9 @@
                     description: d.description,
                     id: d.id
                 })),
-                backgroundColor: '#64ffda'
+                backgroundColor: '#64ffda',
+                pointRadius: 6,
+                pointHoverRadius: 8
             }]
         },
         options: {
@@ -101,7 +103,10 @@
                 title: {
                     display: true,
                     text: 'Value vs Complexity',
-                    color: '#ccd6f6'
+                    color: '#ccd6f6',
+                    font: {
+                        size: 24
+                    }
                 }
             },
             scales: {
@@ -111,7 +116,14 @@
                         text: 'Technical Complexity (Score)',
                         color: '#8892b0'
                     },
-                    grid: { color: '#233554' },
+                    grid: { 
+                        color: '#475569',
+                        tickLength: 0,
+                        borderDash: [2, 2]
+                    },
+                    border: {
+                        dash: [2, 2]
+                    },
                     ticks: { color: '#8892b0' }
                 },
                 y: {
@@ -120,7 +132,14 @@
                         text: 'Business Value (Score)',
                         color: '#8892b0'
                     },
-                    grid: { color: '#233554' },
+                    grid: { 
+                        color: '#475569',
+                        tickLength: 0,
+                        borderDash: [2, 2]
+                    },
+                    border: {
+                        dash: [2, 2]
+                    },
                     ticks: { color: '#8892b0' }
                 }
             }
