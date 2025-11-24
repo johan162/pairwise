@@ -189,6 +189,45 @@ body {
     color: var(--bg-primary);
 }
 
+.btn-view {
+    background-color: #5C7C8A; /* Sophisticated Muted Slate */
+    color: var(--bg-primary);
+    border: 1px solid #5C7C8A;
+}
+
+.btn-view:hover {
+    background-color: #6D8D9B;
+    border-color: #6D8D9B;
+    color: var(--bg-primary);
+}
+
+.btn-close {
+    background-color: #475569; /* Dark Slate */
+    color: #E2E8F0;
+    border: 1px solid #475569;
+}
+
+.btn-close:hover {
+    background-color: #58687F;
+    border-color: #58687F;
+    color: #E2E8F0;
+}
+
+.btn-delete-solid {
+    background-color: #800020; /* Burgundy */
+    color: #FFFFFF;
+    border: 1px solid #800020;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.btn-delete-solid:hover {
+    background-color: #990026;
+    border-color: #990026;
+    color: #FFFFFF;
+}
+
 /* Cards */
 .card {
     background-color: var(--card-bg);

@@ -5,7 +5,7 @@ import itertools
 from typing import List, Tuple, Dict, Optional, Any
 
 class RankingEngine:
-    def __init__(self, items: List[str], initial_mu: float = 25.0, initial_sigma: float = 8.333, target_sigma: float = None):
+    def __init__(self, items: List[str], initial_mu: float = 25.0, initial_sigma: float = 8.333, target_sigma: Optional[float] = None):
         """
         Initialize the ranking engine.
         items: list of item IDs
@@ -142,6 +142,17 @@ class RankingEngine:
     def total_comparisons(self) -> int:
         n = len(self.items)
         return max(0, int(n * (n - 1) / 2))
+
+    def estimated_total_comparisons(self) -> int:
+        """
+        Estimate the number of comparisons needed for a reasonable ranking.
+        Based on O(N log N) complexity of efficient sorting algorithms.
+        """
+        n = len(self.items)
+        if n <= 1:
+            return 0
+        # Using N * log2(N) as a reasonable approximation for "good enough" ranking
+        return int(math.ceil(n * math.log2(n)))
 
     def is_converged(self) -> bool:
         """

@@ -71,12 +71,11 @@ class Project:
                 'total': 0
             }
 
-        total = engine.total_comparisons()
         return {
-            'progress': engine.get_progress(),
             'complete': engine.is_complete(),
+            'progress': engine.get_progress(),
             'comparisons': len(engine.comparisons),
-            'total': total
+            'total': engine.estimated_total_comparisons()
         }
 
     def get_pending_dimensions(self) -> List[str]:

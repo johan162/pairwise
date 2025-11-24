@@ -20,7 +20,7 @@
                     <div class="dimension-actions">
                         {% if status.complete %}
                         <span class="badge">Finished</span>
-                        <a href="{{ url_for('main.results') }}" class="btn btn-secondary">View Results</a>
+                        <a href="{{ url_for('main.results') }}" class="btn btn-close">View Results</a>
                         {% else %}
                         <a href="{{ url_for('main.switch_dimension', dimension=key, target='compare') }}" class="btn btn-continue">Start / Continue</a>
                         {% endif %}
@@ -30,9 +30,9 @@
         </div>
 
         <div class="actions">
-            <a href="{{ url_for('main.results') }}" class="btn btn-secondary">View Results</a>
-            <a href="{{ url_for('main.close_project') }}" class="btn btn-secondary">Close Project</a>
-            <a href="{{ url_for('main.delete_project') }}" class="btn btn-danger" onclick="return confirm('Are you sure? This will delete all progress.')">Delete Project</a>
+            <a href="{{ url_for('main.results') }}" class="btn btn-close">View Results</a>
+            <a href="{{ url_for('main.close_project') }}" class="btn btn-close">Close Project</a>
+            <a href="{{ url_for('main.delete_project') }}" class="btn btn-delete-solid" onclick="return confirm('Are you sure? This will delete all progress.')">Delete Project</a>
         </div>
     </div>
     {% else %}
