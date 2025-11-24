@@ -282,3 +282,10 @@ def delete_project():
         current_project = None
         flash("Project deleted.", "success")
     return redirect(url_for('main.index'))
+
+@bp.route('/load_selected', methods=['POST'])
+def load_selected_project():
+    filename = request.form.get('filename')
+    if filename:
+        return redirect(url_for('main.load_project', filename=filename))
+    return redirect(url_for('main.index'))
