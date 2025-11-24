@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="results-container">
+    <h1>Ranking Results</h1>
+    
+    <div class="chart-container">
+        <!-- Placeholder for a scatter plot -->
+        <canvas id="resultsChart"></canvas>
+    </div>
+
+    <div class="table-container">
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Complexity Rank</th>
+                    <th>Value Rank</th>
+                    <th>Complexity Score</th>
+                    <th>Value Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.description }}</td>
+                    <td>{{ row.complexity_rank }}</td>
+                    <td>{{ row.value_rank }}</td>
+                    <td>{{ "%.2f"|format(row.complexity_score) }}</td>
+                    <td>{{ "%.2f"|format(row.value_score) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="results-data" type="application/json">
+    {{ results|tojson }}
+</script>
+<script>
+    const data = JSON.parse(document.getElementById('results-data').textContent);
+    
+    const ctx = document.getElementById('resultsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Tasks',
+                data: data.map(d => ({
+                    x: d.complexity_score,
+                    y: d.value_score,
+                    description: d.description,
+                    id: d.id
+                })),
+                backgroundColor: '#64ffda'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const p = context.raw;
+                            return `${p.id}: ${p.description}`;
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Value vs Complexity',
+                    color: '#ccd6f6'
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Technical Complexity (Score)',
+                        color: '#8892b0'
+                    },
+                    grid: { color: '#233554' },
+                    ticks: { color: '#8892b0' }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Business Value (Score)',
+                        color: '#8892b0'
+                    },
+                    grid: { color: '#233554' },
+                    ticks: { color: '#8892b0' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

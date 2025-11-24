@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="comparison-container">
+    <div class="header-stats">
+        <div class="stat">
+            <span class="label">Dimension</span>
+            <span class="value">{{ dimension|title }}</span>
+            <div class="dimension-switch">
+                {% if dimension == 'complexity' %}
+                <a href="{{ url_for('main.switch_dimension', dimension='value') }}">Switch to Value</a>
+                {% else %}
+                <a href="{{ url_for('main.switch_dimension', dimension='complexity') }}">Switch to Complexity</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="stat">
+            <span class="label">Progress</span>
+            <div class="progress-bar">
+                <div class="progress-fill" data-width="{{ '%.1f'|format(progress) }}"></div>
+            </div>
+            <span class="value">{{ "%.1f"|format(progress) }}%</span>
+        </div>
+        <div class="stat">
+            <span class="label">Certainty (Kendall Tau)</span>
+            <span class="value">{{ "%.3f"|format(tau) }}</span>
+        </div>
+        <div class="stat">
+            <span class="label">Inconsistency</span>
+            <span class="value warning">{{ "%.1f"|format(inconsistency) }}%</span>
+        </div>
+    </div>
+
+    <h2>Which task has higher {{ dimension }}?</h2>
+
+    <div class="cards-wrapper">
+        <form action="{{ url_for('main.vote') }}" method="POST" class="card-form">
+            <input type="hidden" name="winner" value="{{ task1.id }}">
+            <input type="hidden" name="loser" value="{{ task2.id }}">
+            <button type="submit" class="card task-card">
+                <div class="task-id">{{ task1.id }}</div>
+                <div class="task-desc">{{ task1.description }}</div>
+            </button>
+        </form>
+
+        <div class="vs">VS</div>
+
+        <form action="{{ url_for('main.vote') }}" method="POST" class="card-form">
+            <input type="hidden" name="winner" value="{{ task2.id }}">
+            <input type="hidden" name="loser" value="{{ task1.id }}">
+            <button type="submit" class="card task-card">
+                <div class="task-id">{{ task2.id }}</div>
+                <div class="task-desc">{{ task2.description }}</div>
+            </button>
+        </form>
+    </div>
+    
+    <div class="skip-actions">
+        <!-- Ideally we'd have a skip button, but for now just the vote buttons -->
+    </div>
+</div>
+
+<script>
+    // Apply dynamic widths to progress bars to avoid linter errors with inline styles containing Jinja2 syntax
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.progress-fill[data-width]').forEach(el => {
+            el.style.width = el.dataset.width + '%';
+        });
+    });
+</script>
+{% endblock %}

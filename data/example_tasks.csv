@@ -1,0 +1,11 @@
+id,description
+REQ-001,User login with MFA
+REQ-002,Dashboard with real-time charts
+REQ-003,Export data to PDF
+REQ-004,Integration with Stripe payment gateway
+REQ-005,User profile management
+REQ-006,Admin panel for user management
+REQ-007,Email notifications system
+REQ-008,Search functionality with filters
+REQ-009,Mobile responsive design
+REQ-010,API documentation with Swagger

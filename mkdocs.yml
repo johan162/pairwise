@@ -1,0 +1,25 @@
+site_name: Pairwise Ranking System
+site_description: A modern application for ranking requirements using Active Bayesian Ranking.
+theme:
+  name: material
+  palette: 
+    scheme: slate
+    primary: teal
+    accent: cyan
+
+nav:
+  - Introduction: introduction.md
+  - Installation: installation.md
+  - Running: running.md
+  - Using the System: using.md
+  - Theory Behind: theory-behind.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_css:
+  - stylesheets/extra.css
