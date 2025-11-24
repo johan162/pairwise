@@ -89,8 +89,18 @@ body {
     color: var(--accent);
 }
 
+.btn-secondary:hover {
+    background-color: rgba(100, 255, 218, 0.1);
+}
+
 .btn-danger {
+    background-color: transparent;
+    border: 1px solid var(--danger);
     color: var(--danger);
+}
+
+.btn-danger:hover {
+    background-color: rgba(255, 107, 107, 0.1);
 }
 
 /* Cards */

@@ -16,7 +16,7 @@
                 <span class="project-name">{{ project.name }}</span>
                 <a href="{{ url_for('main.compare') }}">Vote</a>
                 <a href="{{ url_for('main.results') }}">Results</a>
-                <a href="{{ url_for('main.reset') }}" class="btn-danger">Close Project</a>
+                <a href="{{ url_for('main.close_project') }}" class="btn-secondary">Close Project</a>
                 {% endif %}
             </div>
         </div>

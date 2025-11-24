@@ -31,9 +31,36 @@
 
         <div class="actions">
             <a href="{{ url_for('main.results') }}" class="btn btn-secondary">View Results</a>
+            <a href="{{ url_for('main.close_project') }}" class="btn btn-secondary">Close Project</a>
+            <a href="{{ url_for('main.delete_project') }}" class="btn btn-danger" onclick="return confirm('Are you sure? This will delete all progress.')">Delete Project</a>
         </div>
     </div>
     {% else %}
+    
+    {% if saved_projects %}
+    <div class="card">
+        <h2>Saved Projects</h2>
+        <div class="projects-list">
+            {% for p in saved_projects %}
+            <div class="project-item" style="border-bottom: 1px solid var(--bg-primary); padding: 1rem 0; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0;">{{ p.name }}</h3>
+                    <p style="margin: 0.5rem 0; color: var(--text-secondary);">{{ p.description }}</p>
+                    <small style="color: var(--text-secondary);">Created: {{ p.created_at[:10] }}</small>
+                </div>
+                <div class="actions">
+                    {% if p.complete %}
+                    <span class="badge" style="margin-right: 1rem;">Complete</span>
+                    {% endif %}
+                    <a href="{{ url_for('main.load_project', filename=p.filename) }}" class="btn btn-secondary">Load</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div style="text-align: center; margin: 2rem 0; color: var(--text-secondary); font-weight: bold;">OR</div>
+    {% endif %}
+
     <div class="card">
         <h2>Start New Project</h2>
         <form action="{{ url_for('main.new_project') }}" method="POST" enctype="multipart/form-data">

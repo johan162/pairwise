@@ -55,8 +55,9 @@
         </form>
     </div>
     
-    <div class="skip-actions">
-        <!-- Ideally we'd have a skip button, but for now just the vote buttons -->
+    <div class="skip-actions" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem;">
+        <a href="{{ url_for('main.results') }}" class="btn btn-secondary">Pause & View Results</a>
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Save & Exit</a>
     </div>
 </div>
 

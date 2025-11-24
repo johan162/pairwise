@@ -11,10 +11,11 @@ from .ranking import RankingEngine
 class Project:
     DIMENSIONS = ('complexity', 'value')
 
-    def __init__(self, name: str, description: str, tasks_file: Optional[str] = None):
+    def __init__(self, name: str, description: str, tasks_file: Optional[str] = None, state_file: Optional[str] = None):
         self.name = name
         self.description = description
         self.tasks_file = tasks_file
+        self.state_file = state_file
         self.tasks: List[Dict[str, Any]] = []
         self.complexity_engine: Optional[RankingEngine] = None
         self.value_engine: Optional[RankingEngine] = None
@@ -93,7 +94,12 @@ class Project:
         engine = self.get_engine_for_dimension(dimension)
         return bool(engine and engine.is_complete())
 
-    def save_state(self, filepath: str):
+    def save_state(self, filepath: str = None):
+        if filepath is None:
+            filepath = self.state_file
+        if filepath is None:
+            raise ValueError("No filepath provided for saving state")
+            
         complexity_engine = self.complexity_engine
         value_engine = self.value_engine
 
@@ -103,6 +109,7 @@ class Project:
         state = {
             'name': self.name,
             'description': self.description,
+            'created_at': self.created_at,
             'tasks': self.tasks,
             'current_dimension': self.current_dimension,
             'complexity_state': {
@@ -124,7 +131,9 @@ class Project:
         with open(filepath, 'r') as f:
             state = json.load(f)
             
-        project = cls(state['name'], state['description'])
+        project = cls(state['name'], state['description'], state_file=filepath)
+        if 'created_at' in state:
+            project.created_at = state['created_at']
         project.tasks = state['tasks']
         project.current_dimension = state.get('current_dimension', 'complexity')
         
