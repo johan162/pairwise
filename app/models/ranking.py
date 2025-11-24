@@ -5,12 +5,20 @@ import itertools
 from typing import List, Tuple, Dict, Optional, Any
 
 class RankingEngine:
-    def __init__(self, items: List[str], initial_mu: float = 25.0, initial_sigma: float = 8.333):
+    def __init__(self, items: List[str], initial_mu: float = 25.0, initial_sigma: float = 8.333, target_sigma: float = None):
         """
         Initialize the ranking engine.
         items: list of item IDs
+        initial_mu: Initial mean skill
+        initial_sigma: Initial standard deviation (uncertainty)
+        target_sigma: Target standard deviation for convergence. 
+                      Defaults to initial_sigma / 2.0 (approx 4.16), which offers a good balance 
+                      between accuracy and number of comparisons (approx N*3 comparisons).
         """
         self.items = items
+        self.initial_mu = initial_mu
+        self.initial_sigma = initial_sigma
+        self.target_sigma = target_sigma if target_sigma is not None else initial_sigma / 2.0
         self.mu: Dict[str, float] = {item: initial_mu for item in items}
         self.sigma: Dict[str, float] = {item: initial_sigma for item in items}
         self.comparisons: List[Tuple[str, str]] = [] # List of (winner, loser) tuples
@@ -52,6 +60,10 @@ class RankingEngine:
         A simple heuristic is to pick the pair with the highest probability of a draw (closest means) 
         weighted by their uncertainty.
         """
+        # If we are converged, we don't need more comparisons
+        if self.is_converged():
+            return None
+
         best_pair = None
         max_score = -1.0
         
@@ -131,17 +143,47 @@ class RankingEngine:
         n = len(self.items)
         return max(0, int(n * (n - 1) / 2))
 
+    def is_converged(self) -> bool:
+        """
+        Check if the ranking has converged based on the average uncertainty (sigma).
+        """
+        if not self.items:
+            return True
+        avg_sigma = sum(self.sigma.values()) / len(self.items)
+        return avg_sigma <= self.target_sigma
+
     def is_complete(self) -> bool:
+        """
+        Check if the ranking is complete.
+        It is complete if it has converged OR if all possible pairs have been compared.
+        """
+        if self.is_converged():
+            return True
+            
         total = self.total_comparisons()
         if total == 0:
             return True
         return len(self.comparisons) >= total
 
     def get_progress(self) -> float:
-        total_comparisons = self.total_comparisons()
-        if total_comparisons == 0:
+        """
+        Get the progress of the ranking process.
+        Progress is defined by the reduction in uncertainty (sigma) towards the target sigma.
+        """
+        if self.is_complete():
             return 100.0
-        return (len(self.comparisons) / total_comparisons) * 100
+            
+        # Calculate progress based on sigma reduction
+        current_avg_sigma = sum(self.sigma.values()) / len(self.items)
+        
+        # Avoid division by zero
+        if self.initial_sigma <= self.target_sigma:
+            return 100.0
+            
+        sigma_progress = (self.initial_sigma - current_avg_sigma) / (self.initial_sigma - self.target_sigma)
+        
+        # Clamp between 0 and 100 (just in case sigma increases, which shouldn't happen often in this model)
+        return max(0.0, min(100.0, sigma_progress * 100.0))
 
     def get_inconsistency_level(self) -> float:
         """
